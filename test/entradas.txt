@@ -1,0 +1,86 @@
+1
+1
+#Adiciona paciente
+24832111000
+Julia
+10/12/1999
+1
+80802808000
+#teste erro de nome
+joab
+joab1
+01/01/1997
+1
+#teste Cpf cadastrado
+24832111000
+1
+87872194090
+Matheus
+#Teste menor de 13
+12/12/2012
+12/12/1980
+5
+2
+1
+# Agendamentos
+80802808000
+# Data passada
+15/11/2024
+17/11/2024
+# Formato errado da hora
+160
+1600
+# Hora inicial igual a final
+1600
+# hora não permitida
+1602
+1630
+1
+# COnsulta sobreposta
+80802808000
+17/11/2024
+1600
+1630
+1
+# Paciente não cadastrado
+19086839703
+1
+24832111000
+17/11/2024
+1300
+1400
+1
+24832111000
+17/11/2024
+1400
+1500
+1
+80802808000
+17/11/2024
+1500
+1515
+# Mostrar toda a agenda
+3
+T
+# Mostrar intervalo
+3
+P
+16/11/2024
+# Erro data inicial maior que final
+16/11/2023
+16/11/2024
+4
+# Listar pacientes
+1
+3
+# Excluir paciente
+2
+# Cpf Errado
+1920312
+2
+# Paciente com consultas
+80802808000
+2
+# Paciente sem consultas
+87872194090
+5
