@@ -1,29 +1,52 @@
 import { DateTime } from "luxon";
+import { Model, DataTypes } from "sequelize";
+import { Paciente } from "./Paciente.js";
 
-/**
-* Classe que representa uma consulta médica.
-*/
-export class Consulta {
+export class Consulta extends Model{
     /**
-    * @property {string} cpf_paciente - CPF do paciente associado à consulta.
-    */
-    cpf_paciente;
+     * @property {string} cpf_paciente - CPF do paciente associado à consulta.
+     * @property {DateTime} data_consulta - Data da consulta no formato YYYY-MM-DD.
+     * @property {DateTime} hora_inicial - Hora de início da consulta no formato HH:mm:ss.
+     * @property {DateTime} hora_final - Hora de término da consulta no formato HH:mm:ss.
+     */
 
-    /**
-    * @property {DateTime} data_consulta - Data da consulta como uma instância de Luxon.
-    */
-    data_consulta;
+    static init(sequelize){
+        super.init({
 
-    /**
-    * @property {DateTime} hora_inicial - Hora de início da consulta como uma instância de Luxon.
-    */
-    hora_inicial;
+            cpf_paciente:{
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
 
-    /**
-    * @property {DateTime} hora_final - Hora de término da consulta como uma instância de Luxon.
-    */
-    hora_final;
-    
+            data_consulta: {
+                type: DataTypes.DATEONLY,
+                /*Esse getter é utilizado para ser compativel com as outras partes do código que utilizam o luxon, 
+                sem a necessidade de refatorar tudo*/
+                get() {
+                    const rawValue = this.getDataValue("data_consulta")
+                    return rawValue ? DateTime.fromFormat(rawValue, "yyyy-MM-dd") : null;
+                }
+            },
+
+            hora_inicial: {
+                type: DataTypes.TIME,
+                get(){
+                    const rawValue = this.getDataValue("hora_inicial")
+                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm") : null;
+                }
+            },
+
+            hora_final: {
+                type: DataTypes.TIME,
+                get(){
+                    const rawValue = this.getDataValue("hora_final")
+                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm") : null;
+                }
+            },
+
+        }, {sequelize, modelName: "consulta", tableName: "consultas", timestamps: false,})
+    }
+
     /**
     * Verifica se a consulta atual sobrepõe outra consulta.
     *
@@ -59,4 +82,5 @@ export class Consulta {
 
         return false;
     }
-};
+
+}
