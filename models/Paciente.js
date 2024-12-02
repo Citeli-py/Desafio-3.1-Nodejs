@@ -2,14 +2,12 @@ import { Model, DataTypes } from "sequelize";
 
 /**
 * Classe que representa um Paciente.
+* @property {string} cpf - CPF do paciente.
+* @property {string} nome - Nome do paciente.
+* @property {DateTime} data_nasc - Data de nascimento do paciente no formato ISO (yyyy-MM-dd).
 */
 export class Paciente extends Model{
-    /**
-    * @property {string} cpf - CPF do paciente.
-    * @property {string} nome - Nome do paciente.
-    * @property {DateTime} data_nasc - Data de nascimento do paciente no formato ISO (yyyy-MM-dd).
-    */    
-
+  
     static init(sequelize){
         super.init({
             cpf: {
