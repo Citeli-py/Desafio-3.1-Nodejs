@@ -1,7 +1,9 @@
 import { DateTime } from "luxon";
 import { Model, DataTypes } from "sequelize";
-import { Paciente } from "./Paciente.js";
 
+/**
+ * Classe que representa uma Consulta no banco de dados
+ */
 export class Consulta extends Model{
     /**
      * @property {string} cpf_paciente - CPF do paciente associado à consulta.
