@@ -31,8 +31,6 @@ export class PacienteBuilder {
     * @returns {Object} Objeto com a propriedade `success` indicando sucesso ou falha.
     */
     setCpf(novoCpf){
-        console.log(novoCpf);
-
         if (!this.validaCpf(novoCpf)) {
             return { success: false, error: ErrorCodes.ERR_CPF_INVALIDO };
         }
@@ -108,7 +106,6 @@ export class PacienteBuilder {
     * @returns {{success: boolean, error?: string, paciente?: Paciente}} Objeto contendo `success` e, em caso de sucesso, o paciente criado.
     */
     async build() {
-        console.log(this.#cpf)
         if (!this.#cpf || !this.#nome || !this.#data_nasc) {
             return {
                 success: false,
