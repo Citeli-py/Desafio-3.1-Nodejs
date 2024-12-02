@@ -127,18 +127,20 @@ export class ConsultaBuilder {
 
     /**
     * Cria e retorna uma instância da classe Consulta.
+    * @async 
     * @returns {{success: boolean, error?: Number , consulta?: Consulta}} Um objeto contendo a consulta criada ou um erro, caso os dados estejam incompletos.
     */
-    build() {
+    async build() {
         if (!this.#cpf_paciente || !this.#data_consulta || !this.#hora_inicial || !this.#hora_final) {
             return { success: false, error: ErrorCodes.ERR_CONSULTA_INCOMPLETA };
         }
 
-        const consulta = new Consulta();
-        consulta.cpf_paciente = this.#cpf_paciente
-        consulta.data_consulta = this.#data_consulta;
-        consulta.hora_inicial = this.#hora_inicial;
-        consulta.hora_final = this.#hora_final;
+        const consulta = await Consulta.create({
+            cpf_paciente:   this.#cpf_paciente,
+            data_consulta:  this.#data_consulta,
+            hora_inicial:   this.#hora_inicial,
+            hora_final:     this.#hora_final,
+        });
 
         this.clear();
         return { success: true, consulta };
