@@ -113,10 +113,11 @@ export class PacienteBuilder {
             };
         }
 
+        console.log(this.#data_nasc);
         const paciente = await Paciente.create({
             cpf:        this.#cpf,
             nome:       this.#nome,
-            data_nasc:  this.#data_nasc,
+            data_nasc:  this.#data_nasc.toFormat("yyyy-MM-dd"),
         });
 
         this.clear();
