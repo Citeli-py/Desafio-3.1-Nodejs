@@ -1,4 +1,5 @@
 import { Model, DataTypes } from "sequelize";
+import { DateTime } from "luxon";
 
 /**
 * Classe que representa um Paciente.
