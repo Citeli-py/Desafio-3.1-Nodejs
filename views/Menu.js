@@ -1,5 +1,7 @@
 import { View } from './View.js';
 
+import Database from '../db/Database.js';
+
 
 export class Menu extends View{
 
@@ -21,5 +23,15 @@ export class Menu extends View{
                 console.log("Opção inválida! Por favor, escolha uma opção de 1 a 3.\n");
                 return { sair: false };
         }
+    }
+
+    async autenticar(){
+        const isAutenticado = await Database.autenticacao();
+        if(!isAutenticado.sucess){
+            this.processarErros(isAutenticado.error);
+            return false;
+        }
+
+        return true;
     }
 }
