@@ -34,15 +34,15 @@ export class Consulta extends Model{
                 type: DataTypes.TIME,
                 get(){
                     const rawValue = this.getDataValue("hora_inicial")
-                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm") : null;
+                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm:ss",{ zone: "local" }) : null;
                 }
             },
 
             hora_final: {
                 type: DataTypes.TIME,
                 get(){
-                    const rawValue = this.getDataValue("hora_final")
-                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm") : null;
+                    const rawValue = this.getDataValue("hora_final");
+                    return rawValue ? DateTime.fromFormat(rawValue, "HH:mm:ss",{ zone: "local" }) : null;
                 }
             },
 
@@ -73,14 +73,15 @@ export class Consulta extends Model{
     * @returns {boolean} Retorna `true` se a consulta já ocorreu ou foi perdida, caso contrário, `false`.
     */
     isConsultaPassada(){
-        const hoje = DateTime.now();
+        const agora = DateTime.now();
 
-        if(this.data_consulta.diff(hoje.startOf('day')).days < 0)
-            return true;
+        // Combina a data da consulta com a hora inicial para criar um DateTime completo
+        const dataHoraConsulta = DateTime.fromISO(`${this.data_consulta.toISODate()}T${this.hora_inicial.toFormat('HH:mm')}`);
 
-        // Estou considerando que caso você tenha perdido o horario de entrar na consulta ela já não vale mais
-        if(this.hora_inicial.diff(hoje.startOf('hour')).hours < 0)
+        // Verifica se a data e hora da consulta são anteriores ao momento atual
+        if (dataHoraConsulta <= agora) {
             return true;
+        }
 
         return false;
     }
