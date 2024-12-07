@@ -69,12 +69,28 @@ export const ErrorCodes = {
     ERR_CONSULTA_SOBREPOSTA:        212,
 
     /**Não é possivel ter mais de uma consulta futura atrelada a um paciente */
-    ERR_CONSULTA_DUPLA:      213,
+    ERR_CONSULTA_DUPLA:             213,
 
     // Erros gerais ou específicos adicionais
     /** A data final fornecida é menor que a data inicial.*/
     ERR_DATA_FINAL_MENOR_INICIAL:   300,
 
     /**Entrada inválida ou fora do formato esperado ao manipular a agenda. */
-    ERR_ENTRADA_INVALIDA_AGENDA:    301 
+    ERR_ENTRADA_INVALIDA_AGENDA:    301,
+
+    // Erros referentes ao banco de dados
+    /** Login inválido no banco de dados */
+    ERR_BD_LOGIN_INVALIDO:          401,
+
+    /** Host inválido para conexão */
+    ERR_BD_HOST_INVALIDO:           402,
+
+    /** Banco de dados inexistente */
+    ERR_BD_INEXISTENTE:             403,
+
+    /** Erro desconhecido no banco de dados  */
+    ERR_BD_DESCONHECIDO:            404,
+
+    /** Erro de falha ao se conectar com o banco de dados */
+    ERR_BD_FALHA_CONEXAO:           405,
 };
