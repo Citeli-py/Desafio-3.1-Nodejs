@@ -12,7 +12,7 @@ export class Paciente extends Model{
     static init(sequelize){
         super.init({
             cpf: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(11),
                 allowNull: false,
                 unique: true,
             },
