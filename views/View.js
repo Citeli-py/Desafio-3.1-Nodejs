@@ -11,7 +11,7 @@ export class View{
 
     /**
      * Exibe uma mensagem de erro com base no código de erro recebido.
-     * @param {string} erro - O código do erro a ser processado.
+     * @param {number} erro - O código do erro a ser processado.
      */
     processarErros(erro) {
         const ErrorToMsg = {
@@ -67,14 +67,16 @@ export class View{
 
     /**
      * Valida uma entrada fornecida pelo usuário com um método de validação.
+     * 
+     * @async
      * @param {string} mensagem - A mensagem a ser exibida ao solicitar a entrada.
      * @param {function} metodo - O método de validação a ser aplicado à entrada.
      * @returns {{success: boolean, entrada: string}} Resultado da validação e a entrada fornecida.
      */
-    validarEntrada(mensagem, metodo){
+    async validarEntrada(mensagem, metodo){
 
         var entrada = prompt(mensagem);
-        var response = metodo(entrada);
+        var response = await metodo(entrada);
 
         if(!response.success)
             this.processarErros(response.error);
@@ -84,18 +86,20 @@ export class View{
 
     /**
      * Valida uma entrada fornecida pelo usuário em loop até que a entrada seja válida.
+     * 
+     * @async
      * @param {string} mensagem - A mensagem a ser exibida ao solicitar a entrada.
      * @param {function} metodo - O método de validação a ser aplicado à entrada.
      * @returns {string} A entrada validada fornecida pelo usuário.
      */
-    validarEntradaLoop(mensagem, metodo){
+    async validarEntradaLoop(mensagem, metodo){
 
         var response = {success: false, error: ""};
         var entrada;
 
         do {
             entrada = prompt(mensagem);
-            response = metodo(entrada);
+            response = await metodo(entrada);
 
             if(!response.success)
                 this.processarErros(response.error);
@@ -118,9 +122,11 @@ export class View{
 
     /**
      * Loop principal para exibição e processamento das opções da interface.
+     * 
+     * @async
      * @returns {string} A tela para onde o usuário será redirecionado.
      */
-    main() {
+    async main() {
         var sair = false;
         var mensagem;
 
@@ -128,7 +134,7 @@ export class View{
 
             this.show();
             const opcao = this.lerOpcao("> ");
-            mensagem = this.processarOpcao(opcao);
+            mensagem = await this.processarOpcao(opcao);
 
             sair = mensagem.sair;
         }

@@ -1,5 +1,5 @@
-import { PacienteController } from '../controllers/PacienteController.js';
-import { ConsultaController } from '../controllers/ConsultaController.js';
+import PacienteController from '../controllers/PacienteController.js';
+import ConsultaController from '../controllers/ConsultaController.js';
 import { View } from './View.js';
 
 import promptSync from 'prompt-sync';
@@ -13,24 +13,11 @@ export class CadastroPacientes extends View {
 
     /**
      * Construtor da classe CadastroPacientes.
-     * @param {PacienteController} pacientes_controller - Controlador responsável pelos pacientes.
-     * @param {ConsultaController} consultas_controller - Controlador responsável pelas consultas.
      * @throws {Error} Se `pacientes_controller` não for uma instância de `PacienteController`.
      * @throws {Error} Se `consultas_controller` não for uma instância de `ConsultaController`.
      */
-    constructor(pacientes_controller, consultas_controller) {
+    constructor() {
         super();
-
-         // Verificando se pacientes_controller é uma instancia do PacienteController
-         if(!(pacientes_controller instanceof PacienteController))
-            throw new Error("pacientes_controller não é uma instancia de PacienteController");
-
-        // Verificando se consultas_controller é uma instancia do ConsultaController
-        if(!(consultas_controller instanceof ConsultaController))
-            throw new Error("consultas_controller não é uma instancia de ConsultaController");
-        
-        this.pacientes_controller = pacientes_controller;
-        this.consultas_controller = consultas_controller;
     }
 
     /**
@@ -46,17 +33,21 @@ export class CadastroPacientes extends View {
     /**
      * Realiza o cadastro de um novo paciente.
      * Utiliza o controlador de pacientes para gerenciar os dados e validar as entradas.
+     * @async
      */
-    cadastrarNovoPaciente() {
+    async cadastrarNovoPaciente() {
         console.log("Cadastro de novo paciente:");
-        this.pacientes_controller.iniciarNovoPaciente();
+        PacienteController.iniciarNovoPaciente();
 
         // Esse wrapper serve para conseguir passar o contexto da instância para o método
-        super.validarEntradaLoop("CPF: ", (entrada) => this.pacientes_controller.setCpf(entrada));
-        super.validarEntradaLoop("Nome: ", (entrada) => this.pacientes_controller.setNome(entrada));
-        super.validarEntradaLoop("Data de nascimento: ", (entrada) => this.pacientes_controller.setData_nasc(entrada));
+        const resultado_cpf = await super.validarEntrada("CPF: ", async (entrada) => (PacienteController.setCpf(entrada)));
+        if(!resultado_cpf.success) 
+            return;
+            
+        await super.validarEntradaLoop("Nome: ", (entrada) => PacienteController.setNome(entrada));
+        await super.validarEntradaLoop("Data de nascimento: ", (entrada) => PacienteController.setData_nasc(entrada));
 
-        const resultado = this.pacientes_controller.addPaciente();
+        const resultado = await PacienteController.addPaciente();
         if (resultado.success) {
             console.log("\nPaciente cadastrado com sucesso!");
         } else {
@@ -66,11 +57,12 @@ export class CadastroPacientes extends View {
 
     /**
      * Exclui um paciente com base no CPF fornecido.
+     * @async
      * @throws {Error} Caso o CPF seja inválido ou o paciente não seja encontrado.
      */
-    excluirPaciente() {
+    async excluirPaciente() {
         const cpf = prompt("CPF: ");
-        const resultado = this.pacientes_controller.removePaciente(cpf, this.consultas_controller);
+        const resultado = await PacienteController.removePaciente(cpf);
 
         if (resultado.success) {
             console.log("\nPaciente excluído com sucesso.");
@@ -82,16 +74,16 @@ export class CadastroPacientes extends View {
     /**
      * Lista os pacientes cadastrados, ordenados por CPF.
      */
-    listarPacientesOrdenadoPorCpf() {
-        const lista_pacientes = this.pacientes_controller.getPacientesOrdenadosPorCpf(this.consultas_controller);
+    async listarPacientesOrdenadoPorCpf() {
+        const lista_pacientes = await PacienteController.getPacientesOrdenadosPorCpf();
         console.log(lista_pacientes)
     }
 
     /**
      * Lista os pacientes cadastrados, ordenados por nome.
      */
-    listarPacientesOrdenadoPorNome() {
-        const lista_pacientes = this.pacientes_controller.getPacientesOrdenadosPorNome(this.consultas_controller);
+    async listarPacientesOrdenadoPorNome() {
+        const lista_pacientes = await PacienteController.getPacientesOrdenadosPorNome();
         console.log(lista_pacientes)
     }
 
@@ -100,22 +92,22 @@ export class CadastroPacientes extends View {
      * @param {number} opcao - Opção selecionada pelo usuário.
      * @returns { {tela: string, sair: boolean} }; Objeto contendo o nome da tela e o estado de continuidade.
      */
-    processarOpcao(opcao) {
+    async processarOpcao(opcao) {
         switch (opcao) {
             case 1:
-                this.cadastrarNovoPaciente();
+                await this.cadastrarNovoPaciente();
                 return { tela: "CadastroPacientes", sair: true};
 
             case 2:
-                this.excluirPaciente();
+                await this.excluirPaciente();
                 return { tela: "CadastroPacientes", sair: true};
 
             case 3:
-                this.listarPacientesOrdenadoPorCpf();
+                await this.listarPacientesOrdenadoPorCpf();
                 return { tela: "CadastroPacientes", sair: true};
 
             case 4:
-                this.listarPacientesOrdenadoPorNome();
+                await this.listarPacientesOrdenadoPorNome();
                 return { tela: "CadastroPacientes", sair: true};
 
             case 5:

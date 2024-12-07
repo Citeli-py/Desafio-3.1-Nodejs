@@ -1,6 +1,6 @@
 import { View } from "./View.js";
-import { PacienteController } from "../controllers/PacienteController.js";
-import { ConsultaController } from "../controllers/ConsultaController.js";
+import PacienteController from "../controllers/PacienteController.js";
+import ConsultaController from "../controllers/ConsultaController.js";
 
 import { ErrorCodes } from "../utils/Error.js";
 
@@ -12,24 +12,9 @@ export class Agendamento extends View{
 
     /**
      * Construtor da classe Agendamento.
-     * @param {PacienteController} pacientes_controller - Controlador responsável pelos pacientes.
-     * @param {ConsultaController} consultas_controller - Controlador responsável pelas consultas.
-     * @throws {Error} Se `pacientes_controller` não for uma instância de `PacienteController`.
-     * @throws {Error} Se `consultas_controller` não for uma instância de `ConsultaController`.
      */
-    constructor(pacientes_controller, consultas_controller) {
+    constructor() {
         super();
-
-         // Verificando se pacientes_controller é uma instancia do PacienteController
-         if(!(pacientes_controller instanceof PacienteController))
-            throw new Error("pacientes_controller não é uma instancia de PacienteController");
-
-        // Verificando se consultas_controller é uma instancia do ConsultaController
-        if(!(consultas_controller instanceof ConsultaController))
-            throw new Error("consultas_controller não é uma instancia de ConsultaController");
-        
-        this.pacientes_controller = pacientes_controller;
-        this.consultas_controller = consultas_controller;
     }
 
     /**
@@ -42,23 +27,23 @@ export class Agendamento extends View{
     /**
      * Realiza o agendamento de uma nova consulta.
      * Solicita as informações necessárias do usuário e utiliza o controlador de consultas para validar e salvar os dados.
+     * @async
      */
-    agendarConsulta(){
-        this.consultas_controller.iniciarNovaConsulta();
+    async agendarConsulta(){
+        ConsultaController.iniciarNovaConsulta();
 
         // Esse wrapper serve para conseguir passar o contexto da instância para o método
-        const cpf_valido = super.validarEntrada("CPF: ", (entrada) => this.consultas_controller.setCpf(entrada, this.pacientes_controller));
+        const cpf_valido = await super.validarEntrada("CPF: ", async (entrada) => ConsultaController.setCpf(entrada));
 
         // Se errar no cpf desistir da operação
-        if(!cpf_valido.success){
+        if(!cpf_valido.success)
             return;
-        }
 
-        super.validarEntradaLoop("Data da consulta: ", (entrada) => this.consultas_controller.setDataConsulta(entrada));
-        super.validarEntradaLoop("Hora inicial: ", (entrada) => this.consultas_controller.setHoraInicial(entrada));
-        super.validarEntradaLoop("Hora final: ", (entrada) => this.consultas_controller.setHoraFinal(entrada));
+        await super.validarEntradaLoop("Data da consulta: ", (entrada) => ConsultaController.setDataConsulta(entrada));
+        await super.validarEntradaLoop("Hora inicial: ", (entrada) => ConsultaController.setHoraInicial(entrada));
+        await super.validarEntradaLoop("Hora final: ", (entrada) => ConsultaController.setHoraFinal(entrada));
 
-        const resultado = this.consultas_controller.addConsulta();
+        const resultado = await ConsultaController.addConsulta();
         if (resultado.success) {
             console.log("\nAgendamento realizado com sucesso!");
         } else {
@@ -69,22 +54,22 @@ export class Agendamento extends View{
     /**
      * Cancela um agendamento existente.
      * Solicita o CPF, data e hora da consulta, validando as informações antes de cancelar.
+     * @async
      */
-    cancelarAgendamento(){
+    async cancelarAgendamento(){
 
         // Esse wrapper serve para conseguir passar o contexto da instância para o método
-        const cpf_valido = super.validarEntrada("CPF: ", (entrada) => this.pacientes_controller.validaCpf(entrada));
+        const cpf_valido = await super.validarEntrada("CPF: ", async (entrada) => PacienteController.validaCpf(entrada));
 
         // Se errar no cpf desistir da operação
-        if(!cpf_valido.success){
+        if(!cpf_valido.success)
             return;
-        }
 
         // COrrigir mensagem de erro. não se pode desmarcar consultas passadas
-        const data_consulta = super.validarEntradaLoop("Data da consulta: ", (entrada) => this.consultas_controller.validaData(entrada));
-        const hora_inicial = super.validarEntradaLoop("Hora inicial: ", (entrada) => this.consultas_controller.validaHoraInicial(entrada));
+        const data_consulta = await super.validarEntradaLoop("Data da consulta: ", (entrada) => ConsultaController.validaData(entrada));
+        const hora_inicial = await super.validarEntradaLoop("Hora inicial: ", (entrada) => ConsultaController.validaHoraInicial(entrada));
 
-        const resultado = this.consultas_controller.removeConsulta(cpf_valido.entrada, data_consulta, hora_inicial);
+        const resultado = await ConsultaController.removeConsulta(cpf_valido.entrada, data_consulta, hora_inicial);
 
         if (resultado.success) {
             console.log("\nAgendamento cancelado com sucesso!");
@@ -96,9 +81,11 @@ export class Agendamento extends View{
     /**
      * Lista as consultas agendadas.
      * Permite listar todas as consultas ou filtrar por um período específico.
+     * 
+     * @async
      */
-    listarAgenda(){
-        const opcao = super.validarEntradaLoop("Apresentar a agenda T-Toda ou P-Periodo: ", (entrada) => {
+    async listarAgenda(){
+        const opcao = await super.validarEntradaLoop("Apresentar a agenda T-Toda ou P-Periodo: ", (entrada) => {
                 if((entrada === 'T') || (entrada === 'P'))
                     return {success: true}
 
@@ -106,15 +93,15 @@ export class Agendamento extends View{
         })
         
         if(opcao === 'T') {
-            console.log(this.consultas_controller.listarConsultas(this.pacientes_controller));
+            console.log(await ConsultaController.listarConsultas());
             return;
         }
 
         // Preciso de um jeito melhor de validar entradas
-        const data_inicial = super.validarEntradaLoop("Data inicial: ", (entrada) => this.consultas_controller.validaData(entrada));
-        const data_final = super.validarEntradaLoop("Data final: ", (entrada) => this.consultas_controller.validaData(entrada, data_inicial));
+        const data_inicial = await super.validarEntradaLoop("Data inicial: ", (entrada) => ConsultaController.validaData(entrada));
+        const data_final = await super.validarEntradaLoop("Data final: ", (entrada) => ConsultaController.validaData(entrada, data_inicial));
 
-        console.log(this.consultas_controller.listarConsultas(this.pacientes_controller, true, data_inicial, data_final));
+        console.log(await ConsultaController.listarConsultas(true, data_inicial, data_final));
     }
 
     /**
@@ -122,18 +109,18 @@ export class Agendamento extends View{
      * @param {number} opcao - Opção selecionada pelo usuário.
      * @returns {{tela: string, sair: boolean}} Objeto contendo o nome da tela e o estado de continuidade.
      */
-    processarOpcao(opcao){
+    async processarOpcao(opcao){
         switch (opcao) {
             case 1:
-                this.agendarConsulta();
+                await this.agendarConsulta();
                 return { tela: "Agendamento", sair: true};
 
             case 2:
-                this.cancelarAgendamento();
+                await this.cancelarAgendamento();
                 return { tela: "Agendamento", sair: true };
 
             case 3:
-                this.listarAgenda()
+                await this.listarAgenda()
                 return { tela: "Agendamento", sair: true };
             
             case 4:
