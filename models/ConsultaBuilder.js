@@ -3,13 +3,28 @@ import { Consulta } from './Consulta.js';
 import { ErrorCodes } from "../utils/Error.js";
 
 /*
-* Classe responsável por construir objetos do tipo Consulta de forma controlada.
-* Valida as informações fornecidas antes de criar a consulta.
-*/
+ * Classe responsável por construir objetos do tipo Consulta de forma controlada.
+ * Valida as informações fornecidas antes de criar a consulta.
+ */
 export class ConsultaBuilder {
+    /**
+     * @property {string} cpf_paciente
+     */
     #cpf_paciente;
+
+    /**
+     * @property {DateTime} data_consulta
+     */
     #data_consulta;
+
+    /**
+     * @property {DateTime} hora_inicial
+     */
     #hora_inicial;
+
+    /**
+     * @property {DateTime} hora_final
+     */
     #hora_final;
 
     /**
@@ -17,7 +32,6 @@ export class ConsultaBuilder {
     * @param {string} cpf - O CPF do paciente.
     * @returns {{success: boolean}} Um objeto indicando sucesso ou erro.
     */
-
     setCpf(cpf){
         this.#cpf_paciente = cpf;
         return {success: true}
@@ -135,11 +149,11 @@ export class ConsultaBuilder {
             return { success: false, error: ErrorCodes.ERR_CONSULTA_INCOMPLETA };
         }
 
-        const consulta = await Consulta.create({
+        const consulta = new Consulta({
             cpf_paciente:   this.#cpf_paciente,
-            data_consulta:  this.#data_consulta,
-            hora_inicial:   this.#hora_inicial,
-            hora_final:     this.#hora_final,
+            data_consulta:  this.#data_consulta.toFormat("yyyy-MM-dd"),
+            hora_inicial:   this.#hora_inicial.toFormat("HH:mm:00"),
+            hora_final:     this.#hora_final.toFormat("HH:mm:00"),
         });
 
         this.clear();
