@@ -41,6 +41,12 @@ export class View{
             
             [ErrorCodes.ERR_CONSULTA_NAO_ENCONTRADA]:       "Erro: agendamento não encontrado",
             [ErrorCodes.ERR_ENTRADA_INVALIDA_AGENDA]:       "Entrada deve ser T ou P!",
+
+            [ErrorCodes.ERR_BD_DESCONHECIDO]:               "Erro: Ocorreu um erro desconhecido ao se conectar com o banco de dados",
+            [ErrorCodes.ERR_BD_FALHA_CONEXAO]:              "Erro: Falha ao se conectar com o banco de dados",
+            [ErrorCodes.ERR_BD_HOST_INVALIDO]:              "Erro: Host inválido, verifique o .env e as credenciais do seu banco de dados",
+            [ErrorCodes.ERR_BD_INEXISTENTE]:                "Erro: Nome do Banco de dados inválido, verifique o .env e as credenciais do seu banco de dados",
+            [ErrorCodes.ERR_BD_LOGIN_INVALIDO]:             "Erro: Login inválido, verifique o .env e as credenciais do seu banco de dados",
         };
     
         console.log("\n"+ErrorToMsg[erro] || "Erro desconhecido.");
