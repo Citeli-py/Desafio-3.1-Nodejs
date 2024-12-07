@@ -2,6 +2,8 @@ import { Sequelize } from "sequelize";
 import { Paciente } from "../models/Paciente.js";
 import { Consulta } from "../models/Consulta.js";
 
+import { ErrorCodes } from "../utils/Error.js";
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -22,6 +24,7 @@ class Database {
         this.#conexao = new Sequelize(env.DATABASE, env.DB_USER, env.DB_PASSWORD, {
             dialect: "postgres",
             host: process.env.DB_HOST,
+            logging: false,
         });
 
         this.init();
@@ -46,40 +49,36 @@ class Database {
         });
     }
 
+    /**
+     * Realiza a autenticação com o banco de dados, caso haja um erro retorna o erro apropriado
+     * 
+     * @returns {{sucess: boolean, error?: number}} - resposta da autenticação
+     */
     async autenticacao(){
         // Realizar authenticação
         try {
             // Testando a conexão
             await this.#conexao.authenticate();
-            console.log('Conexão estabelecida com sucesso.');
-            return true;
+            return {sucess: true};
     
         } catch (error) {
 
-            console.log("Erro ao se conectar ao banco de dados: ");
+            //console.log("Erro ao se conectar ao banco de dados: ");
+            
             // Futuramente retornar o tipo de erro em um objeto
             switch (error.original.code) {
                 case '28P01': // Login inválido
-                    console.log("\tLogin inválido");
-                    break;
+                    return {sucess: false, error: ErrorCodes.ERR_BD_LOGIN_INVALIDO};
             
                 case 'EAI_AGAIN': // Host desconhecido
-                    console.log("\tHost", process.env.DB_HOST, "inválido");
-                    break;
+                    return {sucess: false, error: ErrorCodes.ERR_BD_HOST_INVALIDO};
             
                 case '3D000': // Banco de dados não existe
-                    console.log("\tBanco de dados", process.env.DATABASE, "não existe");
-                    break;
+                    return {sucess: false, error: ErrorCodes.ERR_BD_INEXISTENTE};
             
                 default: // Outros erros
-                    console.error('\t', error.message);
-                    break;
+                    return {sucess: false, error: ErrorCodes.ERR_BD_DESCONHECIDO};
             }
-            
-
-            await this.#conexao.close();
-            console.log('Conexão encerrada.');
-            return false;
         };
     }
 
