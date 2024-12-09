@@ -19,7 +19,7 @@ class ConsultaController{
     consulta_builder;
 
     /**
-    * Construtor da classe ConsultaController.
+    * Construtor da classe ConsultaController, caso já exista uma instância retorna a mesma.
     * Inicializa o ConsultaBuilder.
     */
     constructor(){
@@ -200,7 +200,7 @@ class ConsultaController{
     * 
     * @async
     * @param {string} cpf - CPF do paciente.
-    * @returns {{success: boolean, error?: number, consultas?:Array<Consulta>}} Objeto contendo o status da operação, as consultas futuras ou um código de erro.
+    * @returns {{success: boolean, error?: number, consultas?:Consulta[]}} - Objeto contendo o status da operação, as consultas futuras ou um código de erro.
     */
     async getAgendamentosFuturos(cpf){
         const consultas = await this.#getConsultasPaciente(cpf);
@@ -212,23 +212,13 @@ class ConsultaController{
     }
 
     /**
-    * Lista todas as consultas, podendo filtrar por período.
-    * 
-    * @async
-    * @param {boolean} filtro_periodo - Indica se deve filtrar por período.
-    * @param {string} [data_inicial=null] - Data inicial no formato "dd/MM/yyyy".
-    * @param {string} [data_final=null] - Data final no formato "dd/MM/yyyy".
-    * @returns {string} String formatada com a lista de consultas.
-    */
-    async listarConsultas(filtro_periodo=false, data_inicial=null, data_final=null){
-
-        let lista_consultas;
-        if(filtro_periodo)
-            lista_consultas = await this.#filtrarConsultas(data_inicial, data_final);
-        else
-            lista_consultas = await Consulta.findAll({order: [['data_consulta', 'ASC'], ['hora_inicial', 'ASC']]});
-
-
+     * Formata as consultas em uma string com suas informações
+     * 
+     * @async
+     * @param {Consulta[]} lista_consultas 
+     * @returns {string} - Tabela com as informações das consultas
+     */
+    async #formatarConsultas(lista_consultas){
         // Cabeçalho
         var resultado = "-------------------------------------------------------------\n";
         resultado    += "   Data    H.Ini H.Fim Tempo Nome                   Dt.Nasc. \n";
@@ -258,18 +248,35 @@ class ConsultaController{
     }
 
     /**
-    * Filtra uma lista de consultas por um intervalo de datas.
+    * Lista todas as consultas futuras
     * 
     * @async
-    * @param {Array<Consulta>} lista_consultas - Lista de consultas a ser filtrada.
+    * @returns {string} String formatada com a lista de consultas.
+    */
+    async listarConsultas(){
+        let lista_consultas = await Consulta.findAll({
+            where: {
+                data_consulta:{
+                    [Op.gte]: DateTime.now().toSQLDate()
+                }
+            },
+            order: [['data_consulta', 'ASC'], ['hora_inicial', 'ASC']], 
+        });
+        return await this.#formatarConsultas(lista_consultas)
+    }
+
+    /**
+    * Lista as consultas futuras contidas em um intervalo de datas.
+    * 
+    * @async
     * @param {string} data_inicial - Data inicial do intervalo no formato "dd/MM/yyyy".
     * @param {string} data_final - Data final do intervalo no formato "dd/MM/yyyy".
     * 
-    * @returns {Array<Consulta>} - Uma nova lista contendo apenas as consultas que estão no intervalo especificado.
+    * @returns {Consulta[]} - Uma nova lista contendo apenas as consultas que estão no intervalo especificado.
     * 
     * @throws {Error} - Lança um erro se `data_inicial` ou `data_final` não forem fornecidas.
     */
-    async #filtrarConsultas(data_inicial, data_final){
+    async listarConsultasPeriodo(data_inicial, data_final){
         if(!(data_inicial && data_final))
             throw new Error("Listar consultas com período deve ter data inicial e final!");
 
@@ -286,7 +293,7 @@ class ConsultaController{
             order: [['data_consulta', 'ASC'], ['hora_inicial', 'ASC']], // Ordenação opcional
         });
 
-        return consultas;
+        return await this.#formatarConsultas(consultas);
 
     }
 
