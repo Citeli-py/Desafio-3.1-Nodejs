@@ -16,6 +16,10 @@ class Database {
      */
     #conexao
 
+    /**
+     * Construtor da CLasse singleton database. Inicia os modelos e sincroniza com o banco de dados
+     * @returns {Database} - Retorna a primeira instância de Database
+     */
     constructor() {
         if (Database.instance) 
             return Database.instance; // Retorna a instância existente
@@ -31,6 +35,9 @@ class Database {
         Database.instance = this; // Salva a instância
     }
 
+    /**
+     * Inicializa os modelos e relacionamentos
+     */
     init(){
         
         Paciente.init(this.#conexao);
@@ -82,11 +89,17 @@ class Database {
         };
     }
 
+    /**
+     * Fecha a conexão com o banco
+     */
     async close(){
         await this.#conexao.close();
     }
 
-    // Método para acessar o Sequelize
+    /**
+     * Retorna a conexão sequelize
+     * @returns {Sequelize}
+     */
     get conexao() {
         return this.#conexao;
     }
