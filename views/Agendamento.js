@@ -101,7 +101,7 @@ export class Agendamento extends View{
         const data_inicial = await super.validarEntradaLoop("Data inicial: ", (entrada) => ConsultaController.validaData(entrada));
         const data_final = await super.validarEntradaLoop("Data final: ", (entrada) => ConsultaController.validaData(entrada, data_inicial));
 
-        console.log(await ConsultaController.listarConsultas(true, data_inicial, data_final));
+        console.log(await ConsultaController.listarConsultasPeriodo(data_inicial, data_final));
     }
 
     /**
