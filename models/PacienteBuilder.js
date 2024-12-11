@@ -3,9 +3,11 @@ import { Paciente } from './Paciente.js';
 import { ErrorCodes } from '../utils/Error.js';
 
 /**
-* Builder para criar instâncias da classe Paciente.
-*/
-
+ * Builder para criar instâncias da classe Paciente.
+ * @property {string} cpf
+ * @property {string} nome
+ * @property {DateTime} data_nasc
+ */
 export class PacienteBuilder {
     #cpf;
     #nome;
@@ -28,7 +30,7 @@ export class PacienteBuilder {
     * Define o CPF do paciente.
     * 
     * @param {string} novoCpf - CPF do paciente.
-    * @returns {Object} Objeto com a propriedade `success` indicando sucesso ou falha.
+    * @returns {{sucess: boolean, error?: number}} Objeto com a propriedade `success` indicando sucesso ou falha.
     */
     setCpf(novoCpf){
         if (!this.validaCpf(novoCpf)) {
@@ -43,7 +45,7 @@ export class PacienteBuilder {
     * Valida o nome do paciente.
     * 
     * @param {string} nome - Nome a ser validado.
-    * @returns {Object} Objeto com a propriedade `success` indicando sucesso ou falha.
+    * @returns {{sucess: boolean, error?: number}} Objeto com a propriedade `success` indicando sucesso ou falha.
     */
     validaNome(nome){
         if (nome.length < 5)
@@ -56,7 +58,7 @@ export class PacienteBuilder {
     * Define o nome do paciente.
     * 
     * @param {string} novoNome - Nome do paciente.
-    * @returns {Object} Objeto com a propriedade `success` indicando sucesso ou falha.
+    * @returns {{sucess: boolean, error?: number}} Objeto com a propriedade `success` indicando sucesso ou falha.
     */
     setNome(novoNome){
         const result = this.validaNome(novoNome);
@@ -71,7 +73,7 @@ export class PacienteBuilder {
     * Define a data de nascimento do paciente.
     * 
     * @param {string} novaData - Data de nascimento no formato "dd/MM/yyyy".
-    * @returns {Object} Objeto com a propriedade `success` indicando sucesso ou falha.
+    * @returns {{sucess: boolean, error?: number}} Objeto com a propriedade `success` indicando sucesso ou falha.
     */
     setData_nasc(novaData){
         // Converte a string para uma data Luxon usando o formato "dd/MM/yyyy"
