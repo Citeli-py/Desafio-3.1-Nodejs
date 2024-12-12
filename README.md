@@ -19,3 +19,13 @@ DB_HOST=        # Endereço do banco de dados (exemplo: localhost)
 DB_PASSWORD=    # Senha do banco de dados
 ```
 
+## Instalação
+
+```bash
+npm install
+```
+
+## Execução
+```bash
+npm start
+```
