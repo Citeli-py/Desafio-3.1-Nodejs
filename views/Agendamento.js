@@ -65,7 +65,6 @@ export class Agendamento extends View{
         if(!cpf_valido.success)
             return;
 
-        // COrrigir mensagem de erro. não se pode desmarcar consultas passadas
         const data_consulta = await super.validarEntradaLoop("Data da consulta: ", (entrada) => ConsultaController.validaData(entrada));
         const hora_inicial = await super.validarEntradaLoop("Hora inicial: ", (entrada) => ConsultaController.validaHoraInicial(entrada));
 
@@ -97,7 +96,6 @@ export class Agendamento extends View{
             return;
         }
 
-        // Preciso de um jeito melhor de validar entradas
         const data_inicial = await super.validarEntradaLoop("Data inicial: ", (entrada) => ConsultaController.validaData(entrada));
         const data_final = await super.validarEntradaLoop("Data final: ", (entrada) => ConsultaController.validaData(entrada, data_inicial));
 
